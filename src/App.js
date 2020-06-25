@@ -15,156 +15,160 @@ function App(props) {
   }, []);
 
   const startVomit = () => {
-    var maxParticles = 30000,
-      particleSize = 3,
-      emissionRate = 5,
-      objectSize = 3; // drawSize of emitter/field
+    var trump = document.getElementById('trump');
+    trump.classList.add('trump-move');
 
-    var canvas = document.querySelector('canvas');
-    var ctx = canvas.getContext('2d');
+    setTimeout(function () {
+      var maxParticles = 30000,
+        particleSize = 3,
+        emissionRate = 5;
 
-    function Vector(x, y) {
-      this.x = x || 0;
-      this.y = y || 0;
-    }
+      var canvas = document.querySelector('canvas');
+      var ctx = canvas.getContext('2d');
 
-    Vector.prototype.add = function (vector) {
-      this.x += vector.x;
-      this.y += vector.y;
-    };
+      function Vector(x, y) {
+        this.x = x || 0;
+        this.y = y || 0;
+      }
 
-    Vector.prototype.getMagnitude = function () {
-      return Math.sqrt(this.x * this.x + this.y * this.y);
-    };
+      Vector.prototype.add = function (vector) {
+        this.x += vector.x;
+        this.y += vector.y;
+      };
 
-    Vector.prototype.getAngle = function () {
-      return Math.atan2(this.y, this.x);
-    };
+      Vector.prototype.getMagnitude = function () {
+        return Math.sqrt(this.x * this.x + this.y * this.y);
+      };
 
-    Vector.fromAngle = function (angle, magnitude) {
-      return new Vector(
-        magnitude * Math.cos(angle),
-        magnitude * Math.sin(angle)
-      );
-    };
+      Vector.prototype.getAngle = function () {
+        return Math.atan2(this.y, this.x);
+      };
 
-    function Particle(point, velocity, acceleration) {
-      this.position = point || new Vector(0, 0);
-      this.velocity = velocity || new Vector(0, 0);
-      this.acceleration = acceleration || new Vector(0, 0);
-    }
+      Vector.fromAngle = function (angle, magnitude) {
+        return new Vector(
+          magnitude * Math.cos(angle),
+          magnitude * Math.sin(angle)
+        );
+      };
 
-    Particle.prototype.move = function () {
-      // Add our current acceleration to our current velocity
-      this.velocity.add(this.acceleration);
+      function Particle(point, velocity, acceleration) {
+        this.position = point || new Vector(0, 0);
+        this.velocity = velocity || new Vector(0, 0);
+        this.acceleration = acceleration || new Vector(0, 0);
+      }
 
-      // Add our current velocity to our position
-      this.position.add(this.velocity);
-    };
+      Particle.prototype.move = function () {
+        // Add our current acceleration to our current velocity
+        this.velocity.add(this.acceleration);
 
-    function Emitter(point, velocity, spread) {
-      this.position = point;
-      this.velocity = velocity;
-      this.spread = spread || Math.PI / 32; // possible angles = velocity +/- spread
-      this.drawColor = '#999'; // So we can tell them apart from Fields later
-    }
+        // Add our current velocity to our position
+        this.position.add(this.velocity);
+      };
 
-    Emitter.prototype.emitParticle = function () {
-      // Use an angle randomized over the spread so we have more of a "spray"
-      var angle =
-        this.velocity.getAngle() +
-        this.spread -
-        Math.random() * this.spread * 2;
+      function Emitter(point, velocity, spread) {
+        this.position = point;
+        this.velocity = velocity;
+        this.spread = spread || Math.PI / 32; // possible angles = velocity +/- spread
+        this.drawColor = '#999'; // So we can tell them apart from Fields later
+      }
 
-      // The magnitude of the emitter's velocity
-      var magnitude = this.velocity.getMagnitude();
+      Emitter.prototype.emitParticle = function () {
+        // Use an angle randomized over the spread so we have more of a "spray"
+        var angle =
+          this.velocity.getAngle() +
+          this.spread -
+          Math.random() * this.spread * 2;
 
-      // The emitter's position
-      var position = new Vector(this.position.x, this.position.y);
+        // The magnitude of the emitter's velocity
+        var magnitude = this.velocity.getMagnitude();
 
-      // New velocity based off of the calculated angle and magnitude
-      var velocity = Vector.fromAngle(angle, magnitude);
+        // The emitter's position
+        var position = new Vector(this.position.x, this.position.y);
 
-      // return our new Particle!
-      return new Particle(position, velocity);
-    };
+        // New velocity based off of the calculated angle and magnitude
+        var velocity = Vector.fromAngle(angle, magnitude);
 
-    var particles = [];
-    // Add one emitter located at `{ x : 100, y : 230}` from the origin (top left)
-    // that emits at a velocity of `2` shooting out from the right (angle `0`)
-    var emitters = [
-      new Emitter(new Vector(100, 230), Vector.fromAngle(0, 2), 0.5)
-    ];
+        // return our new Particle!
+        return new Particle(position, velocity);
+      };
 
-    function addNewParticles() {
-      // if we're at our max, stop emitting.
-      if (particles.length > maxParticles) return;
+      var particles = [];
+      // Add one emitter located at `{ x : 100, y : 230}` from the origin (top left)
+      // that emits at a velocity of `2` shooting out from the right (angle `0`)
+      var emitters = [
+        new Emitter(new Vector(100, 230), Vector.fromAngle(0, 2), 0.5)
+      ];
 
-      // for each emitter
-      for (var i = 0; i < emitters.length; i++) {
-        // for [emissionRate], emit a particle
-        for (var j = 0; j < emissionRate; j++) {
-          particles.push(emitters[i].emitParticle());
+      function addNewParticles() {
+        // if we're at our max, stop emitting.
+        if (particles.length > maxParticles) return;
+
+        // for each emitter
+        for (var i = 0; i < emitters.length; i++) {
+          // for [emissionRate], emit a particle
+          for (var j = 0; j < emissionRate; j++) {
+            particles.push(emitters[i].emitParticle());
+          }
         }
       }
-    }
 
-    function plotParticles(boundsX, boundsY) {
-      // a new array to hold particles within our bounds
-      var currentParticles = [];
+      function plotParticles(boundsX, boundsY) {
+        // a new array to hold particles within our bounds
+        var currentParticles = [];
 
-      for (var i = 0; i < particles.length; i++) {
-        var particle = particles[i];
-        var pos = particle.position;
+        for (var i = 0; i < particles.length; i++) {
+          var particle = particles[i];
+          var pos = particle.position;
 
-        // If we're out of bounds, drop this particle and move on to the next
-        if (pos.x < 0 || pos.x > boundsX || pos.y < 0 || pos.y > boundsY)
-          continue;
+          // If we're out of bounds, drop this particle and move on to the next
+          if (pos.x < 0 || pos.x > boundsX || pos.y < 0 || pos.y > boundsY)
+            continue;
 
-        // Move our particles
-        particle.move();
+          // Move our particles
+          particle.move();
 
-        // Add this particle to the list of current particles
-        currentParticles.push(particle);
+          // Add this particle to the list of current particles
+          currentParticles.push(particle);
+        }
+
+        // Update our global particles, clearing room for old particles to be collected
+        particles = currentParticles;
       }
 
-      // Update our global particles, clearing room for old particles to be collected
-      particles = currentParticles;
-    }
-
-    function drawParticles() {
-      ctx.fillStyle = '#2dd022';
-      for (var i = 0; i < particles.length; i++) {
-        var position = particles[i].position;
-        ctx.fillRect(position.x, position.y, particleSize, particleSize);
+      function drawParticles() {
+        ctx.fillStyle = '#2dd022';
+        for (var i = 0; i < particles.length; i++) {
+          var position = particles[i].position;
+          ctx.fillRect(position.x, position.y, particleSize, particleSize);
+        }
       }
-    }
 
-    function loop() {
-      clear();
-      update();
-      draw();
-      queue();
-    }
+      function loop() {
+        clear();
+        update();
+        draw();
+        queue();
+      }
 
-    function clear() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
+      function clear() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
 
-    function update() {
-      addNewParticles();
-      plotParticles(canvas.width, canvas.height);
-    }
+      function update() {
+        addNewParticles();
+        plotParticles(canvas.width, canvas.height);
+      }
 
-    function draw() {
-      drawParticles();
-    }
+      function draw() {
+        drawParticles();
+      }
 
-    function queue() {
-      window.requestAnimationFrame(loop);
-    }
+      function queue() {
+        window.requestAnimationFrame(loop);
+      }
 
-    loop();
+      loop();
+    }, 3000);
   };
 
   return (
@@ -173,7 +177,7 @@ function App(props) {
       <div className='row'>
         <div className='column'>
           <Vomit />
-          <img src={trump} alt='trump' className='trump' />
+          <img src={trump} alt='trump' id='trump' />
         </div>
         <div className='column'>
           <div className='blockquote'>

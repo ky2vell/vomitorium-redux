@@ -23,9 +23,9 @@ h1 {
   margin-bottom: 80px;
 }
 
-.trump {
+#trump {
   max-width: 460px;
-  margin-left: 50px;
+  margin: auto;
 }
 
 button {
@@ -50,8 +50,21 @@ button {
 
 canvas {
   position: absolute;
-  left: 279px;
-  top: 152px;
+  left: 269px;
+  top: 133px;
 }
 
 @import './quote';
+
+.trump-move {
+  animation: trumpMove 3s linear forwards;
+}
+
+@keyframes trumpMove {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(-80px, -20px);
+  }
+}
