@@ -1,0 +1,41 @@
+.blockquote {
+  position: relative;
+  text-align: left;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  color: #ffffff;
+  padding: 30px 0;
+  max-width: 600px;
+  border-top: solid 1px;
+  border-bottom: solid 1px;
+
+  & h2 {
+    font-size: 2.5rem;
+    position: relative;
+    color: #ffffff;
+    font-weight: 800;
+    line-height: 1;
+    margin: 0;
+  }
+
+  & h4 {
+    position: relative;
+    color: #ffffff;
+    font-size: 1.8rem;
+    font-weight: normal;
+    line-height: 1;
+    margin: 0;
+    padding-top: 20px;
+    z-index: 1;
+  }
+}
+
+.blockquote:after {
+  position: absolute;
+  content: '”';
+  color: rgba(255, 255, 255, 1);
+  font-size: 10rem;
+  line-height: 0;
+  bottom: -43px;
+  right: 30px;
+}
